@@ -1,0 +1,10 @@
+# embedded sub-repositories
+polysaccharide2/*
+polymer_examples/*
+
+# large directories of structures
+cleaned_pdbs/*
+pdb_test/*
+pdb_test_cleaned/*
+
+# debug dirs
