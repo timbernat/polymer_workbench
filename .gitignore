@@ -4,7 +4,11 @@ polymer_examples/*
 
 # large directories of structures
 cleaned_pdbs/*
+
+# debug dirs
+polysaccharide_stripped/*
 pdb_test/*
 pdb_test_cleaned/*
 
-# debug dirs
+# cached files
+**/__pycache__/*
