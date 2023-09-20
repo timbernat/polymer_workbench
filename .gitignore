@@ -5,7 +5,9 @@ polymer_examples/*
 # large directories of structures
 cleaned_pdbs/*
 
-# debug dirs
+# debug
+portlib_legacy_dummy.py
+
 polysaccharide_stripped/*
 pdb_test/*
 # pdb_test_cleaned/*
