@@ -6,8 +6,6 @@ polymer_examples/*
 cleaned_pdbs/*
 
 # debug
-portlib_legacy_dummy.py
-
 polysaccharide_stripped/*
 pdb_test/*
 # pdb_test_cleaned/*
