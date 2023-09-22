@@ -9,6 +9,7 @@ cleaned_pdbs/*
 polysaccharide_stripped/*
 pdb_test/*
 # pdb_test_cleaned/*
+sdf_test/*
 
 # cached files
 **/__pycache__/*
