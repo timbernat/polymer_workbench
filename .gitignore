@@ -10,7 +10,9 @@ polysaccharide_stripped/*
 pdb_test/*
 # pdb_test_cleaned/*
 sdf_test/*
+water_files/*
 openmm_test/*
 
 # cached files
 **/__pycache__/*
+.model.pt
