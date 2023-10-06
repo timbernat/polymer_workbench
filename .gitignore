@@ -12,6 +12,7 @@ pdb_test/*
 sdf_test/*
 water_files/*
 openmm_test/*
+polybuild_test/*
 
 # cached files
 **/__pycache__/*
