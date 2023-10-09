@@ -13,6 +13,7 @@ sdf_test/*
 water_files/*
 openmm_test/*
 polybuild_test/*
+RCT_test/*
 
 # cached files
 **/__pycache__/*
