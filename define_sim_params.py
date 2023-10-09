@@ -62,7 +62,7 @@ all_params = {
             temperature=300*kelvin,
             pressure=1*atmosphere, # doesn't actually matter for NVT
             friction_coeff=1/picosecond,
-            barostat_freq=100     # doesn't actually matter for NVT
+            barostat_freq=100      # doesn't actually matter for NVT
         ),
         reporter_params=ReporterParameters(
             report_state=True,
@@ -82,7 +82,7 @@ all_params = {
             temperature=300*kelvin,
             pressure=1*atmosphere, # doesn't actually matter for NVT
             friction_coeff=1/picosecond,
-            barostat_freq=100     # doesn't actually matter for NVT
+            barostat_freq=100      # doesn't actually matter for NVT
         ),
         reporter_params=ReporterParameters(
             report_state=True,
