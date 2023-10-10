@@ -27,8 +27,8 @@ all_params = {
         reporter_params=ReporterParameters(
             report_state=True,
             report_checkpoint=True,
-            report_state_data=False,
-            report_trajectory=False,
+            report_state_data=True,
+            report_trajectory=True,
         ),
     ),
     'equilibration' : SimulationParameters(

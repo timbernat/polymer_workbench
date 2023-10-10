@@ -52,8 +52,8 @@
         "__values__": {
             "report_checkpoint": true,
             "report_state": true,
-            "report_trajectory": false,
-            "report_state_data": false,
+            "report_trajectory": true,
+            "report_state_data": true,
             "traj_ext": "dcd",
             "num_steps": 500000,
             "state_data": {
