@@ -22,7 +22,7 @@
     "thermo_params": {
         "__class__": "ThermoParameters",
         "__values__": {
-            "ensemble": "NPT",
+            "ensemble": "NVT",
             "temperature": {
                 "__class__": "Quantity",
                 "__values__": {

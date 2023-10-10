@@ -18,7 +18,7 @@ all_params = {
             num_samples=100
         ),
         thermo_params=ThermoParameters(
-            ensemble='NPT',
+            ensemble='NVT',
             temperature=600*kelvin,
             pressure=1*atmosphere,
             friction_coeff=1/picosecond,
@@ -54,7 +54,7 @@ all_params = {
     'production_lite' : SimulationParameters(
         integ_params=IntegratorParameters(
             time_step=2*femtosecond,
-            total_time=100*nanosecond,
+            total_time=1*nanosecond,
             num_samples=5000
         ),
         thermo_params=ThermoParameters(
