@@ -16,7 +16,7 @@
                     "unit": "nanosecond"
                 }
             },
-            "num_samples": 5000
+            "num_samples": 50
         }
     },
     "thermo_params": {

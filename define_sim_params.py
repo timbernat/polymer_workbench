@@ -55,7 +55,7 @@ all_params = {
         integ_params=IntegratorParameters(
             time_step=2*femtosecond,
             total_time=1*nanosecond,
-            num_samples=5000
+            num_samples=50
         ),
         thermo_params=ThermoParameters(
             ensemble='NVT',
