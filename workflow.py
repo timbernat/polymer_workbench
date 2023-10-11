@@ -24,6 +24,7 @@ from openmm.app import Topology
 
 # CUSTOM IMPORTS
 from polysaccharide2.genutils.unitutils import openmm_to_openff
+from polysaccharide2.genutils.fileutils.pathutils import assemble_path
 from polysaccharide2.genutils.decorators.functional import allow_string_paths
 
 from polysaccharide2.openmmtools import execution
@@ -45,19 +46,19 @@ from polysaccharide2.residues.rescharge.calculation import compute_residue_charg
 
 # PARAMETERIZATION FUNCTIONS
 @allow_string_paths
-def rct_protocol(pdb_path : Path, monogroup : MonomerGroup, term_group_orient : dict[str, str], N : int, charger : MolCharger, delete_pdb : bool=True, save_sdf : bool=False) -> ChargesByResidue:
+def rct_protocol(working_dir : Path, mol_name : str, monogroup : MonomerGroup, term_group_orient : dict[str, str], N : int, charger : MolCharger, delete_pdb : bool=True, save_sdf : bool=False) -> ChargesByResidue:
     '''
     Generates library charges for a monomer group given terminal group head-tail orientations and a maximum chain length
     If delete_pdb=True, will remove the working pdb path after charges are generated
     as currently implemented, only supports monomer groups which constitute a linear homopolymer
     '''
-    mol_name = pdb_path.stem
     if not monogroup.is_linear:
         raise MorphologyError('RCT currently only supports linear homopolymers')
     
     DOP = estimation.estimate_DOP_lower(monogroup, max_chain_len=N)
     chain = building.build_linear_polymer(monogroup, DOP, term_orient=term_group_orient)
 
+    pdb_path = assemble_path(working_dir, mol_name, extension='pdb')
     building.mbmol_to_openmm_pdb(pdb_path, chain) # output PDB file to disc 
     offtop = Topology.from_pdb(pdb_path, _custom_substructures=monogroup.monomers, toolkit_registry=TKREGS['The RDKit']) # load custom substructures - raises error if PDB has issues
     if delete_pdb:
@@ -70,7 +71,8 @@ def rct_protocol(pdb_path : Path, monogroup : MonomerGroup, term_group_orient : 
 
     cmol = charger.charge_molecule(offmol, in_place=False)
     if save_sdf:
-        topology.topology_to_sdf(pdb_path.with_name(f'{pdb_path.stem}.sdf'), cmol.to_topology())
+        sdf_path = assemble_path(working_dir, mol_name, extension='sdf')
+        topology.topology_to_sdf(sdf_path, cmol.to_topology())
     res_chgs = compute_residue_charges(cmol, monogroup)
 
     return res_chgs
