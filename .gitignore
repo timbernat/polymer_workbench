@@ -14,6 +14,7 @@ water_files/*
 openmm_test/*
 polybuild_test/*
 RCT_test/*
+workflow_test*/*
 
 # cached files
 **/__pycache__/*
