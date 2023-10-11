@@ -12,8 +12,8 @@
             "total_time": {
                 "__class__": "Quantity",
                 "__values__": {
-                    "value": 1,
-                    "unit": "nanosecond"
+                    "value": 100,
+                    "unit": "picosecond"
                 }
             },
             "num_samples": 50
@@ -55,7 +55,7 @@
             "report_trajectory": true,
             "report_state_data": true,
             "traj_ext": "dcd",
-            "num_steps": 500000,
+            "num_steps": 50000,
             "state_data": {
                 "step": true,
                 "time": true,

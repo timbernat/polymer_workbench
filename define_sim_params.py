@@ -54,7 +54,7 @@ all_params = {
     'production_lite' : SimulationParameters(
         integ_params=IntegratorParameters(
             time_step=2*femtosecond,
-            total_time=1*nanosecond,
+            total_time=100*picosecond,
             num_samples=50
         ),
         thermo_params=ThermoParameters(
