@@ -53,7 +53,7 @@ schedule = {
 
 # main code
 if __name__ == '__main__':
-    with MSFHandlerFlex(args.working_dir, proc_name=__name__, loggers='all') as log_handler:
+    with MSFHandlerFlex(args.working_directory, proc_name=Path(__file__).stem, loggers='all') as log_handler:
         offtop = topology.topology_from_sdf(args.sdf_path)
         ommtop, ommsys, ommpos = openff_topology_to_openmm(offtop, forcefield=args.forcefield, box_vecs=box_dims)
-        history = execution.run_simulation_schedule(args.working_dir, schedule, ommtop, ommsys, ommpos, return_history=True)
+        history = execution.run_simulation_schedule(args.working_directory, schedule, ommtop, ommsys, ommpos, return_history=True)

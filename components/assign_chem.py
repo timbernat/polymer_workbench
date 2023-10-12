@@ -33,7 +33,7 @@ assert(args.monomer_path.suffix == '.json')
 # main code
 if __name__ == '__main__':
     # generate substructure cover and partition
-    with MSFHandlerFlex(args.working_dir, proc_name=__name__, loggers='all') as log_handler:
+    with MSFHandlerFlex(args.working_directory, proc_name=Path(__file__).stem, loggers='all') as log_handler:
         monogrp = MonomerGroup.from_file(args.monomer_path)
         offtop = Topology.from_pdb(args.pdb_path, _custom_substructures=monogrp.monomers, toolkit_registry=TKREGS['The RDKit'])
         was_partitioned = partition(offtop)

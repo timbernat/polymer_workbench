@@ -46,11 +46,11 @@ exclusion = args.exclusion * exclusion_unit
 
 # main code
 if __name__ == '__main__':
-    with MSFHandlerFlex(args.working_dir, proc_name=__name__, loggers='all') as log_handler:
+    with MSFHandlerFlex(args.working_directory, proc_name=Path(__file__).stem, loggers='all') as log_handler:
         offtop = topology.topology_from_sdf(args.sdf_path)
         offmol = topology.get_largest_offmol(offtop)
         mol_name = offmol.name
 
         solv_top = packing.pack_topology_with_solvent(offtop, solvent, box_vecs=box_dims, density=density, exclusion=exclusion)
-        solv_top_path = assemble_path(args.working_dir, mol_name, extension='sdf', postfix=f'solv_{solvent.name}')
+        solv_top_path = assemble_path(args.working_directory, mol_name, extension='sdf', postfix=f'solv_{solvent.name}')
         topology.topology_to_sdf(solv_top_path, solv_top)

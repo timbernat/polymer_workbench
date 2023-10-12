@@ -76,16 +76,16 @@ def rct_protocol(working_dir : Path, mol_name : str, monogroup : MonomerGroup, N
 # main code
 if __name__ == '__main__':
     # RCT loopfrom polysaccharide2.genutils.logutils.IOHandlers import MSFHandlerFlex
-    with MSFHandlerFlex(args.working_dir, proc_name=__name__, loggers='all') as log_handler:
+    with MSFHandlerFlex(args.working_directory, proc_name=Path(__file__).stem, loggers='all') as log_handler:
         chgr = MolCharger.subclass_registry[args.charging_method]()
         monogroup = MonomerGroup.from_file(args.monomer_path)
-        lib_chgs, cmol_redux = rct_protocol(args.working_dir, args.mol_name, monogroup, args.chain_length, charger=chgr, delete_pdb=delete_pdb)
+        lib_chgs, cmol_redux = rct_protocol(args.working_directory, args.mol_name, monogroup, args.chain_length, charger=chgr, delete_pdb=delete_pdb)
         mol_name_redux = f'{cmol_redux.name}{"_" if args.affix else ""}{args.affix}'
         cmol_redux.name = mol_name_redux
 
-        lib_chg_path = assemble_path(args.working_dir, args.mol_name, extension='json', postfix='residue_charges')
+        lib_chg_path = assemble_path(args.working_directory, args.mol_name, extension='json', postfix='residue_charges')
         lib_chgs.to_file(lib_chg_path)
 
         # save small molecule with explicit and RCT charges for benchmark
-        sdf_path_exact = assemble_path(args.working_dir, mol_name_redux, extension='sdf', postfix=args.charging_method)
+        sdf_path_exact = assemble_path(args.working_directory, mol_name_redux, extension='sdf', postfix=args.charging_method)
         topology.topology_to_sdf(sdf_path_exact, cmol_redux.to_topology())

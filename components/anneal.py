@@ -77,12 +77,12 @@ def vacuum_anneal(working_dir : Path, offtop : Topology, anneal_params : Simulat
 # main code
 if __name__ == '__main__':
     # initialize simulation
-    with MSFHandlerFlex(args.working_dir, proc_name='vacuum_anneal', loggers='all') as log_handler:
+    with MSFHandlerFlex(args.working_directory, proc_name='vacuum_anneal', loggers='all') as log_handler:
         anneal_params = SimulationParameters.from_file(args.sim_params_path)
         offtop = topology.topology_from_sdf(args.sdf_path)
         offmol = topology.get_largest_offmol(offtop)
         mol_name = offmol.name
 
-        conf_top = vacuum_anneal(args.working_dir, offtop, anneal_params, forcefield=args.forcefield, box_vecs=box_dims)
-        conf_top_path = assemble_path(args.working_dir, mol_name, extension='sdf', postfix=args.affix)
+        conf_top = vacuum_anneal(args.working_directory, offtop, anneal_params, forcefield=args.forcefield, box_vecs=box_dims)
+        conf_top_path = assemble_path(args.working_directory, mol_name, extension='sdf', postfix=args.affix)
         topology.topology_to_sdf(conf_top_path, conf_top)

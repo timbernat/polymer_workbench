@@ -18,7 +18,7 @@ parser.add_argument('-wdir', '--working_directory', help='Directory into which f
 parser.add_argument('-sdf' , '--sdf_path'         , help='Path to SDF file from which to read parameterized molecule structure', type=Path)
 
 parser.add_argument('-cmet', '--charging_method'      , help='Charge assignment method to use to compute charges', type=str)
-parser.add_argument('-lcp' , '--library_charge_path'  , help='Path to a JSON file containing library charges for the desired molecule', type=Path)
+parser.add_argument('-lc'  , '--library_charge_path'  , help='Path to a JSON file containing library charges for the desired molecule', type=Path)
 
 # post-process args as needed
 args = parser.parse_args()
@@ -30,7 +30,7 @@ assert(args.library_charge_path.suffix == '.json')
 
 # main code
 if __name__ == '__main__':
-    with MSFHandlerFlex(args.working_dir, proc_name=__name__, loggers='all') as log_handler:
+    with MSFHandlerFlex(args.working_directory, proc_name=Path(__file__).stem, loggers='all') as log_handler:
         offtop = topology.topology_from_sdf(args.sdf_path)
         offmol = topology.get_largest_offmol(offtop)
         mol_name = offmol.name
@@ -40,10 +40,10 @@ if __name__ == '__main__':
             if (args.library_charge_path is not None) and (args.library_charge_path.exists()):
                 charger = ChargerType(ChargesByResidue.from_file(args.library_charge_path))
             else:
-                raise FileExistsError
+                raise FileExistsError(f'Invalid library charge file "{args.library_charge_file}" provided')
         else:
             charger = ChargerType()
 
         cmol = charger.charge_molecule(offmol, in_place=False)
-        charged_top_path = assemble_path(args.working_dir, mol_name, extension='sdf', postfix=args.charging_method)
+        charged_top_path = assemble_path(args.working_directory, mol_name, extension='sdf', postfix=args.charging_method)
         topology.topology_to_sdf(charged_top_path, cmol.to_topology())
