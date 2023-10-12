@@ -1,13 +1,24 @@
 '''Vacuum anneal a molecule to generate a unique starting configuration'''
 
+import warnings
+warnings.catch_warnings(record=True)
+warnings.filterwarnings('ignore', category=UserWarning)
+warnings.filterwarnings('ignore', category=DeprecationWarning)
+
 import argparse
-from pathlib import Path
 import logging
+from polysaccharide2.genutils.logutils.IOHandlers import LOG_FORMATTER
+logging.basicConfig(
+    level=logging.INFO,
+    format =LOG_FORMATTER._fmt,
+    datefmt=LOG_FORMATTER.datefmt,
+    # force=True
+)
 LOGGER = logging.Logger(__name__)
 
 from typing import Optional, Union
-
 import numpy as np
+from pathlib import Path
 from copy import deepcopy
 
 from openff.toolkit import ForceField, Topology
@@ -21,36 +32,39 @@ from polysaccharide2.genutils.unitutils import openmm_to_openff
 
 from polysaccharide2.openmmtools.parameters import SimulationParameters
 from polysaccharide2.openmmtools import execution
-from polysaccharide2.openmmtools.parameters import SimulationParameters
 
 from polysaccharide2.openfftools import topology
 from polysaccharide2.openfftools.omminter import openff_topology_to_openmm
 from polysaccharide2.openfftools.solvation import boxvectors
 
 
-# accept args from CLI
-parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('-wdir', '--working_directory'  , help='Directory into which files generated should be saved'  , type=Path)
-parser.add_argument('-sdf' , '--sdf_path'           , help='Path to SDF file from which to read parameterized molecule structure', type=Path)
-parser.add_argument('-bd'  , '--box_dimensions'     , help='XYZ dimensions of the desired periodic box for the system', type=list, nargs=3)
-parser.add_argument('-bdu' , '--box_dimension_units', help='Unit to use when assigning box dimensions (default nanometer)', type=str, default='nanometer')
-parser.add_argument('-sp'  , '--sim_params_path'    , help='Path to the file storing the simulation parameters for the anneal', type=str)
-parser.add_argument('-ff'  , '--forcefield'         , help='Name of the ForceField XML to use for MD', type=str)
-parser.add_argument('-a'   , '--affix'              , help='Additional text to attach to the end of the molecule name provided when naming ', type=str)
+def parse_args() -> argparse.Namespace:
+    '''Accept and pre-process arguments from command line'''
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-wdir', '--working_directory'  , help='Directory into which files generated should be saved'  , type=Path)
+    parser.add_argument('-sdf' , '--sdf_path'           , help='Path to SDF file from which to read parameterized molecule structure', type=Path)
+    parser.add_argument('-a'   , '--affix'              , help='Additional text to attach to the end of the molecule name provided when naming ', type=str)
+    
+    parser.add_argument('-bd'  , '--box_dimensions'     , help='XYZ dimensions of the desired periodic box for the system', nargs=3, type=float)
+    parser.add_argument('-bdu' , '--box_dimension_unit' , help='Unit to use when assigning box dimensions (default nanometer)', type=str, default='nanometer')
+    
+    parser.add_argument('-sp'  , '--sim_param_path'     , help='Path to the file storing the simulation parameters for the anneal', type=Path)
+    parser.add_argument('-ff'  , '--forcefield'         , help='Name of the ForceField XML to use for MD', type=str)
 
+    # post-process args as needed
+    args = parser.parse_args()
+    args.working_directory.mkdir(exist_ok=True)
+    assert(args.sdf_path.suffix == '.sdf')
 
-# post-process args as needed
-args = parser.parse_args()
-args.working_directory.mkdir(exist_ok=True)
-assert(args.sdf_path.suffix == '.sdf')
-assert(args.sim_params_paths.suffix == '.json')
+    assert(args.sim_param_path.suffix == '.json')
+    args.anneal_params = SimulationParameters.from_file(args.sim_param_path)
 
-box_dim_unit = getattr(openmm.unit, args.box_dimension_unit)
-box_dims = np.array(args.box_dimensions) * box_dim_unit
-box_vecs = boxvectors.box_vectors_flexible(box_dims)
+    box_dim_unit = getattr(openmm.unit, args.box_dimension_unit)
+    box_dims = np.array(args.box_dimensions) * box_dim_unit
+    args.box_vecs = boxvectors.box_vectors_flexible(box_dims)
 
+    return args
 
-# utility functions
 @allow_string_paths
 def vacuum_anneal(working_dir : Path, offtop : Topology, anneal_params : SimulationParameters, forcefield : Union[ForceField, str, Path],
                 box_vecs : Optional[Union[boxvectors.VectorQuantity, boxvectors.BoxVectorsQuantity]]=None, step_name : str='anneal') -> Topology:
@@ -73,16 +87,18 @@ def vacuum_anneal(working_dir : Path, offtop : Topology, anneal_params : Simulat
 
     return new_mol.to_topology()
 
-
-# main code
-if __name__ == '__main__':
-    # initialize simulation
+def main() -> None:
+    '''Define main code body'''
+    args = parse_args()
     with MSFHandlerFlex(args.working_directory, proc_name='vacuum_anneal', loggers='all') as log_handler:
-        anneal_params = SimulationParameters.from_file(args.sim_params_path)
         offtop = topology.topology_from_sdf(args.sdf_path)
         offmol = topology.get_largest_offmol(offtop)
         mol_name = offmol.name
 
-        conf_top = vacuum_anneal(args.working_directory, offtop, anneal_params, forcefield=args.forcefield, box_vecs=box_dims)
+        conf_top = vacuum_anneal(args.working_directory, offtop, args.anneal_params, forcefield=args.forcefield, box_vecs=args.box_vecs)
         conf_top_path = assemble_path(args.working_directory, mol_name, extension='sdf', postfix=args.affix)
+        print(str(conf_top_path))
         topology.topology_to_sdf(conf_top_path, conf_top)
+
+if __name__ == '__main__':
+    main()

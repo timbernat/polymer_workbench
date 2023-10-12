@@ -1,10 +1,22 @@
 '''For generating library charges according to the RCT strategy for a given monomer chemistry'''
 
+import warnings
+warnings.catch_warnings(record=True)
+warnings.filterwarnings('ignore', category=UserWarning)
+warnings.filterwarnings('ignore', category=DeprecationWarning)
+
 import argparse
-from pathlib import Path
 import logging
+from polysaccharide2.genutils.logutils.IOHandlers import LOG_FORMATTER
+logging.basicConfig(
+    level=logging.INFO,
+    format =LOG_FORMATTER._fmt,
+    datefmt=LOG_FORMATTER.datefmt,
+    # force=True
+)
 LOGGER = logging.Logger(__name__)
 
+from pathlib import Path
 from openff.toolkit import Molecule, Topology
 
 from polysaccharide2.genutils.decorators.functional import allow_string_paths
@@ -23,26 +35,27 @@ from polysaccharide2.openfftools import topology, TKREGS
 from polysaccharide2.residues.partition import partition
 
 
-# accept args from CLI
-parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('-wdir', '--working_directory', help='Directory into which files generated should be saved'  , type=Path)
-parser.add_argument('-mono', '--monomer_path'     , help='Path to JSON file from which to read monomer chemistry', type=Path)
-parser.add_argument('-n'   , '--mol_name'         , help='Name to assign to chemically-specified molecule'       , type=str)
-parser.add_argument('-a'   , '--affix'            , help='Additional text to attach to the end of the molecule name provided when naming ', type=str, default='reduced')
+def parse_args() -> argparse.Namespace:
+    '''Accept and pre-process arguments from command line'''
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-wdir', '--working_directory', help='Directory into which files generated should be saved'  , type=Path)
+    parser.add_argument('-mono', '--monomer_path'     , help='Path to JSON file from which to read monomer chemistry', type=Path)
+    parser.add_argument('-n'   , '--mol_name'         , help='Name to assign to chemically-specified molecule'       , type=str)
+    parser.add_argument('-a'   , '--affix'            , help='Additional text to attach to the end of the molecule name provided when naming ', type=str, default='reduced')
 
-parser.add_argument('-cmet', '--charging_method'  , help='Base charge assignment method from which to extract library charges', type=str)
-parser.add_argument('-N'   , '--chain_length'     , help='Maximum number of atoms to include in reduced chain'   , type=int, default=150)
-parser.add_argument('-k'   , '--keep_pdb'         , help='If set, will preserve the intermediary PDB file for the reduction', action='store_true')
+    parser.add_argument('-cmet', '--charging_method'  , help='Base charge assignment method from which to extract library charges', type=str)
+    parser.add_argument('-N'   , '--chain_length'     , help='Maximum number of atoms to include in reduced chain'   , type=int, default=150)
+    parser.add_argument('-k'   , '--keep_pdb'         , help='If set, will preserve the intermediary PDB file for the reduction', action='store_true')
 
-# post-process args as needed
-args = parser.parse_args()
-args.working_directory.mkdir(exist_ok=True)
-assert(args.monomer_path.suffix == '.json')
-assert(args.charging_method in MolCharger.subclass_registry)
-delete_pdb = not args.keep_pdb
+    # post-process args as needed
+    args = parser.parse_args()
+    args.working_directory.mkdir(exist_ok=True)
+    assert(args.monomer_path.suffix == '.json')
+    assert(args.charging_method in MolCharger.subclass_registry)
+    args.delete_pdb = not args.keep_pdb
 
+    return args
 
-# utility functions
 @allow_string_paths
 def rct_protocol(working_dir : Path, mol_name : str, monogroup : MonomerGroup, N : int, charger : MolCharger, delete_pdb : bool=True) -> tuple[ChargesByResidue, Molecule]:
     '''
@@ -72,14 +85,13 @@ def rct_protocol(working_dir : Path, mol_name : str, monogroup : MonomerGroup, N
 
     return res_chgs, cmol
 
-
-# main code
-if __name__ == '__main__':
-    # RCT loopfrom polysaccharide2.genutils.logutils.IOHandlers import MSFHandlerFlex
+def main() -> None:
+    '''Define main code body'''
+    args=parse_args()
     with MSFHandlerFlex(args.working_directory, proc_name=Path(__file__).stem, loggers='all') as log_handler:
         chgr = MolCharger.subclass_registry[args.charging_method]()
         monogroup = MonomerGroup.from_file(args.monomer_path)
-        lib_chgs, cmol_redux = rct_protocol(args.working_directory, args.mol_name, monogroup, args.chain_length, charger=chgr, delete_pdb=delete_pdb)
+        lib_chgs, cmol_redux = rct_protocol(args.working_directory, args.mol_name, monogroup, args.chain_length, charger=chgr, delete_pdb=args.delete_pdb)
         mol_name_redux = f'{cmol_redux.name}{"_" if args.affix else ""}{args.affix}'
         cmol_redux.name = mol_name_redux
 
@@ -89,3 +101,7 @@ if __name__ == '__main__':
         # save small molecule with explicit and RCT charges for benchmark
         sdf_path_exact = assemble_path(args.working_directory, mol_name_redux, extension='sdf', postfix=args.charging_method)
         topology.topology_to_sdf(sdf_path_exact, cmol_redux.to_topology())
+
+# main code
+if __name__ == '__main__':
+    main()
