@@ -3,8 +3,8 @@
 from shutil import copyfile
 from pathlib import Path
 
-from polysaccharide2.genutils.fileutils.pathutils import assemble_path
-from polysaccharide2.monomers import MonomerGroup
+from polymerist.genutils.fileutils.pathutils import assemble_path
+from polymerist.monomers import MonomerGroup
 
 
 # CONFIGURE PATHS
