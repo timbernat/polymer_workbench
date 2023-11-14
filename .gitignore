@@ -15,6 +15,7 @@ openmm_test/*
 polybuild_test/*
 RCT_test/*
 workflow_test*/*
+demos/*
 
 # cached files
 **/__pycache__/*
