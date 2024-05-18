@@ -4,10 +4,10 @@ from openff.interchange import Interchange
 from openff.toolkit import Molecule, Topology, ForceField
 
 # Import my custom tools which simplify parts of this process
-from polymerist.openfftools import FFDIR, TKREGS, FF_DIR_REGISTRY, FF_PATH_REGISTRY
-from polymerist.openfftools.topology import topology_to_sdf
-from polymerist.openmmtools.serialization import serialize_openmm_pdb
-from polymerist.openfftools.partialcharge import molchargers
+from polymerist.mdtools.openfftools import FFDIR, TKREGS, FF_DIR_REGISTRY, FF_PATH_REGISTRY
+from polymerist.mdtools.openfftools.topology import topology_to_sdf
+from polymerist.mdtools.openmmtools.serialization import serialize_openmm_pdb
+from polymerist.mdtools.openfftools.partialcharge import molchargers
 
 
 # initialize molecule from SMILES string, generate conformation

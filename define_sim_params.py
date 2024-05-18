@@ -8,7 +8,7 @@ warnings.filterwarnings('ignore', category=DeprecationWarning)
 from pathlib import Path
 from openmm.unit import nanosecond, picosecond, femtosecond
 from openmm.unit import kelvin, atmosphere
-from polymerist.openmmtools.parameters import IntegratorParameters, ThermoParameters, ReporterParameters, SimulationParameters
+from polymerist.mdtools.openmmtools.parameters import IntegratorParameters, ThermoParameters, ReporterParameters, SimulationParameters
 
 
 # DEFINE OUTPUT DIRECTORY HERE
