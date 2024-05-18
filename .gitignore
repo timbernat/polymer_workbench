@@ -6,16 +6,20 @@ polymer_examples/*
 cleaned_pdbs/*
 
 # debug
-polysaccharide_stripped/*
-pdb_test/*
-# pdb_test_cleaned/*
-sdf_test/*
+symmetry_actions/*
+lattices/*
+
+demos/*
 water_files/*
+polysaccharide_stripped/*
+
+test.*
+pdb_test/*
+sdf_test/*
 openmm_test/*
 polybuild_test/*
 RCT_test/*
 workflow_test*/*
-demos/*
 
 # cached files
 **/__pycache__/*
