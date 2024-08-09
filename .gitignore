@@ -4,6 +4,7 @@ polymer_examples/*
 
 # large directories of structures
 cleaned_pdbs/*
+membrane_fragments/*
 
 # debug
 symmetry_actions/*
