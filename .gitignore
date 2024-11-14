@@ -15,7 +15,7 @@ demos/*
 water_files/*
 polysaccharide_stripped/*
 
-test.*
+test*.*
 pdb_test/*
 sdf_test/*
 openmm_test/*
