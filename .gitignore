@@ -15,6 +15,9 @@ demos/*
 water_files/*
 polysaccharide_stripped/*
 
+imports.csv
+# extract_imports.py
+
 test*.*
 pdb_test/*
 sdf_test/*
