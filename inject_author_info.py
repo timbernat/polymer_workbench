@@ -55,48 +55,37 @@ def main():
         
             # 1) Balance newlines between initial line and next non-empty line
             mdn = extract_module_docstring(syntax_tree)
-            working_line = 0 if mdn is None else mdn.end_lineno
-
-            i = 0
-            found_nonempty = False
-            for line in lines[working_line:]:
-                if line != '\n':
-                    found_nonempty = True
-                    break
-                i += 1
-            print(path, working_line + i - num_lines, found_nonempty)
-
-            if i < 1 and found_nonempty:
-                lines.insert(working_line, '\n') # if no gap is present, insert a newline
-                i += 1
-            if i > 1:
-                for _ in range(i - 1):
-                    lines.pop(working_line)
-                    i -= 1
+            working_line_idx = -1 if mdn is None else mdn.end_lineno - 1
+            if working_line_idx != -1:
+                docstring_line = lines[working_line_idx]
+                if not docstring_line.endswith('\n'):
+                    lines[working_line_idx] += '\n'
             
             # 2) Make necessary insertions into text
-            lineidx_nonempty = min(working_line + i, num_lines)
-            insertions = [] # will be in reverse order, to avoid needing to keep track of highest insertion index
-
-            email_nodes = [node for node in extract_dunder_tags(syntax_tree) if node.targets[0].id == '__email__']
-            email_node = email_nodes[0] if email_nodes else None
-            if email_node is None:
-                insertions.append("__email__ = 'timotej.bernat@colorado.edu'\n")
+            insertions = []
 
             author_nodes = [node for node in extract_dunder_tags(syntax_tree) if node.targets[0].id == '__author__']
             author_node = author_nodes[0] if author_nodes else None
             if author_node is None:
                 insertions.append("__author__ = 'Timotej Bernat'\n")
             else:
-                working_line = author_node.lineno
+                working_line_idx = author_node.lineno # 1-index accounts for offset here
 
+            email_nodes = [node for node in extract_dunder_tags(syntax_tree) if node.targets[0].id == '__email__']
+            email_node = email_nodes[0] if email_nodes else None
+            if email_node is None:
+                insertions.append("__email__ = 'timotej.bernat@colorado.edu'\n")
+                
+            insertions = insertions[::-1]  # reverse order to avoid needing to keep track of highest insertion index
             if insertions:
-                insertions.append('\n')
-            if not found_nonempty:
-                insertions.append('\n')
+                insertions.append('\n') # prepend newline if insertions are to be made (this will be written last)
 
             for added_line in insertions:
-                lines.insert(working_line, added_line)
+                lines.insert(working_line_idx + 1, added_line)
+
+            print(path)
+            print(insertions)
+            print(lines[:10])
 
             # 3) Rewrite file
             with open(path, 'w') as file:
