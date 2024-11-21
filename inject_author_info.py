@@ -76,6 +76,9 @@ def main():
             if email_node is None:
                 insertions.append("__email__ = 'timotej.bernat@colorado.edu'\n")
                 
+            if lines[working_line_idx] != '\n':
+                insertions.append('\n')
+
             insertions = insertions[::-1]  # reverse order to avoid needing to keep track of highest insertion index
             if insertions:
                 insertions.append('\n') # prepend newline if insertions are to be made (this will be written last)
