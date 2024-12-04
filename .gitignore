@@ -7,7 +7,7 @@ cleaned_pdbs/*
 membrane_fragments/*
 rxn_demo_imgs/*
 
-# debug
+# debug dirs
 symmetry_actions/*
 lattices/*
 
@@ -15,9 +15,12 @@ demos/*
 water_files/*
 polysaccharide_stripped/*
 
+# one-off files
 imports.csv
+pretzel.pdb
 # extract_imports.py
 
+# testing files
 test*.*
 pdb_test/*
 sdf_test/*
