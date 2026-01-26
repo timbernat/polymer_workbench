@@ -1,5 +1,6 @@
 # embedded sub-repositories
 polymerist/*
+polymerist_examples/*
 polymer_examples/*
 
 # large directories of structures
