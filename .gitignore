@@ -23,6 +23,7 @@ pretzel.pdb
 
 # testing files
 test*.*
+test*/**
 pdb_test/*
 sdf_test/*
 openmm_test/*
